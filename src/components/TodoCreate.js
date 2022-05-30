@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
 import { MdAdd } from "react-icons/md";
+import { useTodoDispatch, useTodoNextId } from "../TodoContext";
 
 const CircleButton = styled.div`
     background: #38d9a9;
@@ -57,7 +58,9 @@ const InsertFormPositioner = styled.div`
     position: absolute;
 `;
 
-const InsertForm = styled.div`
+/* div로 되어있던 것을 form으로 바꿔주어, Enter 이벤트가 발생했을 때 onSubmit 할 수 있도록 바꿔 주었다. 
+이때 onSubmit 시 새로고침이 되는데, 토글되었던 할 일 목록도 리셋 된다. (초기값으로)*/
+const InsertForm = styled.form`
     background: #f8f9fa;
     padding: 32px;
     padding-bottom: 72px;
@@ -78,16 +81,38 @@ const Input = styled.input`
 
 function TodoCreate() {
     const [open, setOpen] = useState(false);
+    const [value, setValue] = useState("");
+    const dispatch = useTodoDispatch();
+    const nextId = useTodoNextId();
+
     const onToggle = () => setOpen(!open);
+    const onChange = (e) => setValue(e.target.value);
+    const onSubmit = (e) => {
+        /* onSubmit 시 새로고침 되는 것을 방지하기 위해서 e.prevenDefault() 함수 실행 */
+        e.preventDefault();
+        dispatch({
+            type: "CREATE",
+            todo: {
+                id: nextId.current,
+                text: value,
+                done: false,
+            },
+        });
+        setValue("");
+        setOpen(false);
+        nextId.current += 1;
+    };
 
     return (
         <>
             {open && (
                 <InsertFormPositioner>
-                    <InsertForm>
+                    <InsertForm onSubmit={onSubmit}>
                         <Input
                             placeholder="할 일을 입력 후, Enter 를 누르세요"
                             autoFocus
+                            onChange={onChange}
+                            value={value}
                         />
                     </InsertForm>
                 </InsertFormPositioner>
@@ -99,4 +124,4 @@ function TodoCreate() {
     );
 }
 
-export default TodoCreate;
+export default React.memo(TodoCreate);
