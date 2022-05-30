@@ -37,10 +37,10 @@
             "last 1 chrome version",
             "last 1 firefox version",
             "last 1 safari version"
-        ],
-        "homepage": "http://devlse.github.io/todolist"
+        ]
     },
     "devDependencies": {
         "gh-pages": "^4.0.0"
-    }
+    },
+    "homepage": "http://devlse.github.io/todolist"
 }
